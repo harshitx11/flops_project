@@ -1,0 +1,27 @@
+# Optional. Build and push the image first, then replace the image reference:
+#   docker build --target runtime -t YOUR_REGISTRY/sentiment-mlops:1.0.0 .
+#   docker push YOUR_REGISTRY/sentiment-mlops:1.0.0
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: sentiment-api}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: sentiment-api}}
+  template:
+    metadata: {labels: {app: sentiment-api}}
+    spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 10001}
+      containers:
+        - name: api
+          image: YOUR_REGISTRY/sentiment-mlops:1.0.0
+          ports: [{containerPort: 8000}]
+          resources: {requests: {cpu: 100m, memory: 256Mi}, limits: {cpu: 500m, memory: 512Mi}}
+          readinessProbe: {httpGet: {path: /ready, port: 8000}, initialDelaySeconds: 5}
+          livenessProbe: {httpGet: {path: /health, port: 8000}, initialDelaySeconds: 15}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sentiment-api}
+spec:
+  selector: {app: sentiment-api}
+  ports: [{port: 8000, targetPort: 8000}]
