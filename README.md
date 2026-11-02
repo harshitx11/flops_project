@@ -1,5 +1,7 @@
 # Review Sentiment Analysis - End-to-End MLOps
 
+[![CI](https://github.com/harshitx11/flops_project/actions/workflows/ci.yml/badge.svg)](https://github.com/harshitx11/flops_project/actions/workflows/ci.yml)
+
 This project classifies short review sentences (from products, restaurants, or movies) as **positive** or **negative**. It trains a scikit-learn Pipeline (TF-IDF followed by Logistic Regression) with fixed hyperparameters, serves it through FastAPI with a plain HTML/CSS/JavaScript web page, and includes tests, CI, a multi-stage Docker build that trains the model itself, Docker Compose, Prometheus, Grafana, and an optional Kubernetes manifest.
 
 ## Architecture
