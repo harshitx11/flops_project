@@ -28,3 +28,43 @@ jobs:
           for i in $(seq 1 30); do curl -fs http://127.0.0.1:8000/ready && break; sleep 2; done
           curl -fs -X POST http://127.0.0.1:8000/predict -H 'Content-Type: application/json' -d '{"text":"I love it"}'
           docker rm -f api
+  deploy-test:
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with: {terraform_wrapper: false}
+      - name: Check Terraform
+        run: |
+          terraform -chdir=infra/terraform fmt -check
+          terraform -chdir=infra/terraform init
+          terraform -chdir=infra/terraform validate
+      - name: Create Kubernetes cluster
+        uses: helm/kind-action@v1
+      - name: Build image and load it into the cluster
+        run: |
+          docker build --target runtime -t ghcr.io/harshitx11/sentiment-mlops:1.0.0 .
+          kind load docker-image ghcr.io/harshitx11/sentiment-mlops:1.0.0 --name chart-testing
+      - name: Create infrastructure with Terraform
+        run: terraform -chdir=infra/terraform apply -auto-approve
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -n sentiment -f deployment/kubernetes/deployment.yaml
+          kubectl rollout status -n sentiment deployment/sentiment-api --timeout=180s
+  publish:
+    runs-on: ubuntu-latest
+    needs: deploy-test
+    if: github.event_name == 'push'
+    permissions: {contents: read, packages: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        run: |
+          docker build --target runtime -t ghcr.io/harshitx11/sentiment-mlops:1.0.0 -t ghcr.io/harshitx11/sentiment-mlops:${{ github.sha }} .
+          docker push --all-tags ghcr.io/harshitx11/sentiment-mlops
