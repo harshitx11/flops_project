@@ -19,7 +19,8 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
-      - run: docker build --target runtime -t sentiment-mlops-api:ci .
+      - name: Build Docker image
+        run: docker build --target runtime -t sentiment-mlops-api:ci .
       - name: Smoke test the image
         run: |
           docker run -d --name api -p 8000:8000 sentiment-mlops-api:ci
