@@ -10,3 +10,6 @@ __pycache__/
 !/artifacts/.gitkeep
 /reports/latest_evaluation.json
 *.egg-info/
+.terraform/
+*.tfstate
+*.tfstate.*
