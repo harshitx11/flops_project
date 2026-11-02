@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review Sentiment Analyzer</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand"><span class="brand-dot" aria-hidden="true"></span>Sentiment Lab</span>
+    <span class="status" id="api-status" role="status">Connecting…</span>
+  </header>
+
+  <main class="layout">
+    <section class="intro">
+      <h1>How does this review <em>feel</em>?</h1>
+      <p>Type a product, restaurant, or movie review. A TF-IDF + Logistic Regression model trained on 3,000 labelled sentences from Amazon, Yelp, and IMDB scores it as positive or negative and shows which words pushed it there.</p>
+    </section>
+
+    <section class="card composer" aria-labelledby="composer-title">
+      <h2 id="composer-title" class="visually-hidden">Analyze a review</h2>
+      <form id="analyze-form">
+        <label for="review">Review text</label>
+        <textarea id="review" name="review" maxlength="5000" rows="5" placeholder="e.g. The battery lasts all day and the screen is gorgeous." required></textarea>
+        <div class="composer-row">
+          <div class="examples" aria-label="Example reviews">
+            <button type="button" class="chip" data-text="Absolutely loved the food, and the staff were so friendly!">😊 Positive</button>
+            <button type="button" class="chip" data-text="The plot was boring and the acting was terrible.">😞 Negative</button>
+            <button type="button" class="chip" data-text="Great screen, but the battery died after two hours.">😐 Mixed</button>
+          </div>
+          <span class="counter" id="counter">0 / 5000</span>
+        </div>
+        <div class="actions">
+          <button type="button" class="ghost" id="clear-button">Clear</button>
+          <button type="submit" class="primary" id="submit-button">Analyze sentiment</button>
+        </div>
+        <p class="hint">Tip: press <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> to analyze.</p>
+      </form>
+    </section>
+
+    <section class="card result" id="result" hidden aria-live="polite" aria-labelledby="result-title">
+      <div class="result-head">
+        <span class="verdict-icon" id="verdict-icon" aria-hidden="true"></span>
+        <div>
+          <p class="overline">Prediction</p>
+          <h2 id="result-title"></h2>
+        </div>
+        <p class="confidence" id="confidence"></p>
+      </div>
+      <div class="meter" aria-hidden="true">
+        <div class="meter-track"><span class="meter-marker" id="meter-marker"></span></div>
+        <div class="meter-labels"><span>Negative</span><span>Neutral</span><span>Positive</span></div>
+      </div>
+      <p class="meter-text" id="meter-text"></p>
+      <div class="drivers">
+        <div><h3>Pushed positive</h3><ul class="terms positive" id="positive-terms"></ul></div>
+        <div><h3>Pushed negative</h3><ul class="terms negative" id="negative-terms"></ul></div>
+      </div>
+    </section>
+
+    <section class="card error" id="error" hidden role="alert"></section>
+
+    <aside class="side">
+      <section class="card model" aria-labelledby="model-title">
+        <h2 id="model-title" class="overline">Model card</h2>
+        <dl class="stats" id="model-stats"><div><dt>Status</dt><dd>Loading…</dd></div></dl>
+      </section>
+      <section class="card history" aria-labelledby="history-title">
+        <h2 id="history-title" class="overline">This session</h2>
+        <ol id="history"><li class="empty">No reviews analyzed yet.</li></ol>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer">Predictions are statistical estimates from short English review sentences and can be wrong for sarcasm, slang, or other domains.</footer>
+  <script src="/config.js"></script>
+  <script src="/script.js"></script>
+</body>
+</html>
