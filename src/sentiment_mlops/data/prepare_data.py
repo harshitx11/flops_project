@@ -11,7 +11,7 @@ LABELS = ["negative", "positive"]
 def normalize_label(value: object) -> str:
     """Map a raw 0/1 label (or an already-normalized name) to a class name."""
 
-    label = str(value).strip().lower()
+    label = str(value).lower()
     if label in LABEL_MAP:
         return LABEL_MAP[label]
     if label in LABELS:
