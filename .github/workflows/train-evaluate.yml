@@ -1,0 +1,21 @@
+name: Train and evaluate
+on:
+  workflow_dispatch:
+  schedule: [{cron: "0 3 1 * *"}]
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen
+      - run: uv run download-data
+      - run: uv run train-model
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evaluation
+          path: |
+            reports/latest_evaluation.json
+            artifacts/model_metadata.json
+          if-no-files-found: warn
