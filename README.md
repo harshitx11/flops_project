@@ -88,8 +88,8 @@ You do **not** need to train on your machine first. The `Dockerfile` is multi-st
 |---|---|
 | Web page + API | <http://127.0.0.1:8000> |
 | API docs | <http://127.0.0.1:8000/docs> |
-| Prometheus | <http://127.0.0.1:9090> |
-| Grafana | <http://127.0.0.1:3000> (login from `.env`, dashboard "Review Sentiment MLOps") |
+| Prometheus | <http://127.0.0.1:9080> |
+| Grafana | <http://127.0.0.1:3001> (login from `.env`, dashboard "Review Sentiment MLOps") |
 
 All ports bind to loopback only. Useful commands:
 
@@ -145,7 +145,7 @@ In Docker, the acceptance threshold is a build argument (`docker compose build -
 
 - **VM**: install Docker, clone the repository, `cp .env.example .env`, set a strong `GRAFANA_ADMIN_PASSWORD` and `SENTIMENT_CORS_ORIGINS`, then run `docker compose up --build -d`. Put Nginx (see `deployment/nginx.conf`) or a load balancer in front for TLS.
 - **Static frontend elsewhere** (for example Cloudflare Pages): publish `frontend/`, set `apiBaseUrl` in `frontend/config.js` to the public API origin, and add that site's origin to `SENTIMENT_CORS_ORIGINS`.
-- **Kubernetes (optional)**: `docker build --target runtime -t YOUR_REGISTRY/sentiment-mlops:1.0.0 .`, push the image, update the image name in `deployment/kubernetes/deployment.yaml`, then run `kubectl apply -f deployment/kubernetes/deployment.yaml`.
+- **Kubernetes + Terraform**: `terraform -chdir=infra/terraform init && terraform -chdir=infra/terraform apply` creates the `sentiment` namespace and quota, then `kubectl apply -n sentiment -f deployment/kubernetes/deployment.yaml` deploys the image CI publishes to `ghcr.io/harshitx11/sentiment-mlops`.
 
 ## Troubleshooting and limitations
 
