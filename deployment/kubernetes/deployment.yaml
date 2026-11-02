@@ -1,6 +1,4 @@
-# Optional. Build and push the image first, then replace the image reference:
-#   docker build --target runtime -t YOUR_REGISTRY/sentiment-mlops:1.0.0 .
-#   docker push YOUR_REGISTRY/sentiment-mlops:1.0.0
+# Image is published by the CI workflow. The namespace comes from infra/terraform.
 apiVersion: apps/v1
 kind: Deployment
 metadata: {name: sentiment-api}
@@ -13,7 +11,7 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 10001}
       containers:
         - name: api
-          image: YOUR_REGISTRY/sentiment-mlops:1.0.0
+          image: ghcr.io/harshitx11/sentiment-mlops:1.0.0
           ports: [{containerPort: 8000}]
           resources: {requests: {cpu: 100m, memory: 256Mi}, limits: {cpu: 500m, memory: 512Mi}}
           readinessProbe: {httpGet: {path: /ready, port: 8000}, initialDelaySeconds: 5}
